@@ -17,14 +17,13 @@ class Monitor:
         self.restart_process()
 
     def __init__(self, arguments):
-        self.filename = arguments.filename + (
-            ".py" if not arguments.filename.endswith(".py") else ""
-        )
+        self.filename = arguments.filename
         self.patterns = arguments.patterns
         self.args = arguments.args
         self.watch = arguments.watch
         self.debug = arguments.debug
         self.clean = arguments.clean
+        self.run = arguments.run
 
         self.process = None
 
@@ -61,7 +60,12 @@ class Monitor:
     def start_process(self):
         if not self.clean:
             log(Color.GREEN, f"starting {self.filename}")
-        self.process = subprocess.Popen([executable, self.filename, *self.args])
+
+        if self.run:
+            self.process = subprocess.Popen([self.filename, *self.args])
+        else:
+            self.process = subprocess.Popen([executable, self.filename, *self.args])
+        
 
     def stop_process(self):
         self.process.terminate()

@@ -40,9 +40,10 @@ parser.add_argument(
     "--args",
     type=str,
     help="arguments to pass on to the execution script. use once for each argument.",
-    action="append",
+    action="extend",
     default=[],
     metavar="command",
+    nargs='*'
 )
 
 parser.add_argument(
@@ -56,6 +57,13 @@ parser.add_argument(
     "-c",
     "--clean",
     help="runs pymon in clean mode (no logs, no commands)",
+    action="store_true",
+)
+
+parser.add_argument(
+    "-r",
+    "--run",
+    help="runs an executable instead of a .py file",
     action="store_true",
 )
 
