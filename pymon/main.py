@@ -39,7 +39,7 @@ parser.add_argument(
     "-a",
     "--args",
     type=str,
-    help="arguments to pass on to the execution script. use once for each argument.",
+    help="arguments to pass on to the execution script.",
     action="extend",
     default=[],
     metavar="command",
@@ -70,7 +70,7 @@ parser.add_argument(
 parser.add_argument(
     "-e",
     "--exclude",
-    help="excludes directory from monitoring",
+    help="excludes file or directory from monitoring",
     action="extend",
     default=[],
     metavar="path",

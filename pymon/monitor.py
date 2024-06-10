@@ -71,6 +71,8 @@ class Monitor:
         if not self.clean:
             log(Color.YELLOW, f"watching path: {self.watch}")
             log(Color.YELLOW, f"watching patterns: {', '.join(self.patterns)}")
+            if self.exclude:
+                log(Color.YELLOW, f"excluding: {', '.join(self.exclude)}")
             log(Color.YELLOW, "enter 'rs' to restart or 'stop' to terminate")
 
         self.observer.start()

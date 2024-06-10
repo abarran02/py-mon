@@ -13,17 +13,23 @@ pip install -U py-mon
 pymon filename.py
 ```
 
-That's pretty much it! 😌 
+That's pretty much it! 😌
 
-If you have a more sophisticated use-case, there are three other arguments you can utilize:
+Additional arguments include:
 - ``--patterns`` (``-p``) to specify what file patterns to monitor. default: ``*.py``
 - ``--watch`` (``-w``) to specify what directory to monitor for changes. default: ``.``
 - ``--args`` (``-a``) to pass arguments to the execute script.
+- ``--run`` (``-r``) to run an executable instead of a .py file.
+- ``--exclude`` (``-e``) to exclude a file or directory from monitoring.
+- ``--debug`` (``-d``) to log detected file changes to the terminal.
+- ``--clean`` (``-c``) to run pymon in clean mode (no logs, no commands).
 
 #### Examples:
 - ``pymon test.py -p "*.json"`` will monitor changes in python and json files
 - ``pymon test.py -p "*.json" -w "./data"`` will only monitor changes in python and json files within the ``data`` directory
 - ``pymon test.py --args "dev mode"`` will essentially run the program ``python3 test.py dev mode``
+- ``pymon test -r` will run the executable named "test" with no arguments
+- ``pymon test.py -e .venv/`` will not restart for changes to files in the .venv/ directory
 
 
 Anyway thats basically it! Thanks for everything, I would appreciate it if you could leave a follow or star this repository ❣️ If you have any feature requests, read below!
