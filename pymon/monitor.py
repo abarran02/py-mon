@@ -1,8 +1,9 @@
+import datetime
 import subprocess
 from pathlib import Path
 from sys import executable
 
-from watchdog.events import PatternMatchingEventHandler
+from watchdog.events import FileSystemEvent, PatternMatchingEventHandler
 from watchdog.observers import Observer
 
 from .logger import *
@@ -20,10 +21,21 @@ def check_file_excluded(check: str, exclude: str) -> bool:
         return check_path == exclude_path
 
 class Monitor:
-    def _handle_event(self, event):
-        # check if changed file is excluded or in an excluded directory
-        if any([check_file_excluded(event.src_path, exc) for exc in self.exclude]):
+    def _handle_event(self, event: FileSystemEvent):
+        # 1 second cooldown to prevent watchdog event triggering double restart
+        # as described in https://github.com/gorakhargosh/watchdog/issues/346
+        # then check if changed file is excluded or in an excluded directory
+        if (self.last_event \
+            and event.src_path == self.last_event[0].src_path \
+            and datetime.datetime.now() - self.last_event[1] < datetime.timedelta(seconds=1)) \
+            or any([check_file_excluded(event.src_path, exc) for exc in self.exclude]):
             return
+
+        # update most recent event with current time
+        self.last_event = (
+            event,
+            datetime.datetime.now()
+        )
 
         if not self.clean:
             log(Color.YELLOW, "restarting due to changes detected...")
@@ -50,6 +62,7 @@ class Monitor:
         self.event_handler.on_created = self._handle_event
         self.event_handler.on_deleted = self._handle_event
         self.event_handler.on_moved = self._handle_event
+        self.last_event: tuple[FileSystemEvent, datetime.datetime] = None
 
         self.observer = Observer()
         self.observer.schedule(self.event_handler, self.watch, recursive=True)
