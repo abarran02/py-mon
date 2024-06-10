@@ -67,6 +67,15 @@ parser.add_argument(
     action="store_true",
 )
 
+parser.add_argument(
+    "-e",
+    "--exclude",
+    help="excludes directory from monitoring",
+    action="extend",
+    default=[],
+    metavar="path",
+    nargs='*'
+)
 
 def main():
     colorama.init()

@@ -1,13 +1,30 @@
 import subprocess
+from pathlib import Path
 from sys import executable
-from watchdog.observers import Observer
+
 from watchdog.events import PatternMatchingEventHandler
+from watchdog.observers import Observer
 
 from .logger import *
 
 
+def check_file_excluded(check: str, exclude: str) -> bool:
+    check_path = Path(check).resolve()
+    exclude_path = Path(exclude).resolve()
+
+    if exclude_path.is_dir():
+        # directory is excluded
+        return exclude_path in check_path.parents
+    else:
+        # single file is excluded
+        return check_path == exclude_path
+
 class Monitor:
     def _handle_event(self, event):
+        # check if changed file is excluded or in an excluded directory
+        if any([check_file_excluded(event.src_path, exc) for exc in self.exclude]):
+            return
+
         if not self.clean:
             log(Color.YELLOW, "restarting due to changes detected...")
 
@@ -24,6 +41,7 @@ class Monitor:
         self.debug = arguments.debug
         self.clean = arguments.clean
         self.run = arguments.run
+        self.exclude = arguments.exclude
 
         self.process = None
 
@@ -65,7 +83,7 @@ class Monitor:
             self.process = subprocess.Popen([self.filename, *self.args])
         else:
             self.process = subprocess.Popen([executable, self.filename, *self.args])
-        
+
 
     def stop_process(self):
         self.process.terminate()
